@@ -13,24 +13,20 @@ void uart_init()
     UCSR0C |= _BV(UCSZ01) | _BV(UCSZ00); // 6. Character size: 8-bits
     UBRR0H = UBRRH_VALUE;                // 7. Baud Rate: 9600
     UBRR0L = UBRRL_VALUE;                // 7. Baud Rate: 9600
+    stdout = &mystdout;
+    stdin = &mystdin;
 }
 
-void uart_send(char character)
+static int uart_putchar(char character, FILE *stream)
 {
+    if (character == '\n')
+        uart_putchar('\r', stream);
     loop_until_bit_is_set(UCSR0A, UDRE0);
     UDR0 = character;
+    return 0;
 }
 
-void uart_printf(char *string)
-{
-    while (*string != 0x00)
-    {
-        uart_send(*string);
-        string++;
-    }
-}
-
-char uart_receibe()
+static int uart_receibe(FILE *stream)
 {
     loop_until_bit_is_set(UCSR0A, RXC0);
     return UDR0;
