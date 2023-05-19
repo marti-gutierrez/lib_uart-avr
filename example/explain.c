@@ -6,11 +6,9 @@
 int main()
 {
     uart_init();
-    char string[] = "hello world\n\r";
     while (1)
     {
-        uart_printf(string);
+        printf("Hello World!\n");
         _delay_ms(500);
     }
-    
 }
